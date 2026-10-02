@@ -117,24 +117,14 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'changshou-86-reunion';
 
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-
-            apiKey: "AIzaSyDummyKeyForCloudflareStatic123",
-
-            authDomain: "changshou-86.firebaseapp.com",
-
-            projectId: "changshou-86",
-
-            storageBucket: "changshou-86.appspot.com",
-
-            messagingSenderId: "1234567890",
-
-            appId: "1:1234567890:web:abcdef"
-
+            apiKey: "AIzaSyCBh2SXFqi2lmvdF4UBlGbtlVNMt69ugV8",
+            authDomain: "changshou-86-reunion.firebaseapp.com",
+            projectId: "changshou-86-reunion",
+            storageBucket: "changshou-86-reunion.firebasestorage.app",
+            messagingSenderId: "925003670680",
+            appId: "1:925003670680:web:5a33b0fe850b75c2cb9ced",
+            measurementId: "G-9YPXKHP59H"
         };
-
-        const customAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
-
-
 
         const app = initializeApp(firebaseConfig);
 
@@ -157,30 +147,19 @@
 
 
         async function initAuth() {
+            if (auth.currentUser) return auth.currentUser;
 
-            try {
+            const authPromise = signInAnonymously(auth);
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error("AUTH_TIMEOUT")), 10000);
+            });
 
-                if (customAuthToken) {
-
-                    await signInWithCustomToken(auth, customAuthToken);
-
-                } else {
-
-                    await signInAnonymously(auth);
-
-                }
-
-                console.log("Firebase initialized on Cloudflare Static Page.");
-
-            } catch (e) {
-
-                console.warn("Cloudflare static auth fallback active:", e);
-
-            }
-
+            const credential = await Promise.race([authPromise, timeoutPromise]);
+            console.log("Firebase anonymous authentication ready:", credential?.user?.uid);
+            return credential?.user || auth.currentUser;
         }
 
-        window.addEventListener('DOMContentLoaded', initAuth);
+        window.firebaseReady = initAuth();
 
     </script>
 
@@ -577,6 +556,14 @@
                                 <span class="inline-block bg-lacquer-100 text-lacquer-700 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">18:00</span>
 
                                 <span>集体晚餐，欢聚一堂</span>
+
+                            </li>
+
+                            <li class="flex items-start">
+
+                                <span class="inline-block bg-lacquer-100 text-lacquer-700 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">19:30</span>
+
+                                <span>观看长寿湖烟花大会</span>
 
                             </li>
 
@@ -1164,6 +1151,11 @@
 
             try {
 
+                await window.firebaseReady;
+                if (!window.auth.currentUser) {
+                    throw new Error("Anonymous authentication did not complete.");
+                }
+
                 const appId = window.appId;
 
                 const db = window.db;
@@ -1195,14 +1187,22 @@
                 modalMsg.innerText = `尊敬的 ${name} 同学，已成功保存您的回执【${attend}】！管理后台将实时同步。`;
 
                 statusModal.classList.remove('hidden');
+                rsvpForm.reset();
 
             } catch (err) {
 
                 console.error("Submission error:", err);
 
-                modalTitle.innerText = "提交成功 (本地缓存)";
-
-                modalMsg.innerText = `尊敬的 ${name} 同学，已记录您的回执【${attend}】！`;
+                modalTitle.innerText = "提交失败";
+                let detail = "";
+                if (err?.code) {
+                    detail = err.code;
+                } else if (err?.message === "AUTH_TIMEOUT") {
+                    detail = "匿名登录超时";
+                } else if (err?.message) {
+                    detail = err.message;
+                }
+                modalMsg.innerText = `暂时无法提交到报名数据库${detail ? "（" + detail + "）" : ""}。请截图此提示联系管理员。`;
 
                 statusModal.classList.remove('hidden');
 
