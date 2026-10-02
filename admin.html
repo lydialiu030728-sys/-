@@ -104,7 +104,7 @@
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         import { getFirestore, collection, onSnapshot, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -148,26 +148,61 @@
 
 
 
+        let syncStarted = false;
+
+        function setSyncStatus(text, ok = true) {
+            const el = document.getElementById('syncStatus');
+            if (!el) return;
+            el.innerHTML = `<i class="fas fa-circle ${ok ? 'text-green-400' : 'text-red-500'} text-[8px] mr-1.5"></i> ${text}`;
+        }
+
         async function initAuth() {
             try {
-                const authPromise = auth.currentUser ? Promise.resolve({ user: auth.currentUser }) : signInAnonymously(auth);
-                const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error("AUTH_TIMEOUT")), 10000);
+                setSyncStatus("正在连接数据库…", true);
+
+                const timeout = setTimeout(() => {
+                    if (!syncStarted) {
+                        setSyncStatus("连接超时", false);
+                        const body = document.getElementById('rsvpTableBody');
+                        if (body) {
+                            body.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-800 font-serif">
+                                Firebase 登录超时。请刷新页面重试。
+                            </td></tr>`;
+                        }
+                    }
+                }, 12000);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (!user || syncStarted) return;
+
+                    syncStarted = true;
+                    clearTimeout(timeout);
+                    console.log("Admin anonymous auth ready:", user.uid);
+                    setSyncStatus("实时同步中", true);
+                    startRealtimeSync(user.uid);
                 });
 
-                await Promise.race([authPromise, timeoutPromise]);
-
-                console.log("Admin Dashboard authenticated successfully.");
-                startRealtimeSync(auth.currentUser?.uid || 'anonymous');
+                if (!auth.currentUser) {
+                    await signInAnonymously(auth);
+                }
             } catch (error) {
                 console.error("Auth error:", error);
-                showNotification("数据库连接失败，请刷新后重试", "error");
-                document.getElementById('syncStatus').innerHTML =
-                    '<i class="fas fa-circle text-red-500 text-[8px] mr-1.5"></i> 连接失败';
+                setSyncStatus("连接失败", false);
+                const code = error?.code || error?.message || "unknown";
+                const body = document.getElementById('rsvpTableBody');
+                if (body) {
+                    body.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-800 font-serif">
+                        数据库连接失败：${code}
+                    </td></tr>`;
+                }
             }
         }
 
-        window.addEventListener('DOMContentLoaded', initAuth);
+        if (document.readyState === "loading") {
+            window.addEventListener('DOMContentLoaded', initAuth, { once: true });
+        } else {
+            initAuth();
+        }
 
     </script>
 
@@ -426,8 +461,14 @@
             }, (error) => {
 
                 console.error("Firestore snapshot error:", error);
-
-                document.getElementById('rsvpTableBody').innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-800 font-serif">暂无云端数据或请先在邀请函页面提交测试回执。</td></tr>`;
+                const code = error?.code || error?.message || "unknown";
+                const status = document.getElementById('syncStatus');
+                if (status) {
+                    status.innerHTML = '<i class="fas fa-circle text-red-500 text-[8px] mr-1.5"></i> 同步失败';
+                }
+                document.getElementById('rsvpTableBody').innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-800 font-serif">
+                    无法读取云端数据：${code}
+                </td></tr>`;
 
             });
 
