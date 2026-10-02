@@ -1,779 +1,192 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>长中八六高文科班 - 管理后台</title>
 
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>长中八六高文科班 - 同学会管理员反馈看板</title>
-
-
-
-    <!-- Tailwind CSS Script -->
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-
-        window.tailwind.config = {
-
-            theme: {
-
-                extend: {
-
-                    colors: {
-
-                        lacquer: {
-
-                            50: '#fdf2f2',
-
-                            100: '#fde8e8',
-
-                            700: '#8c1d1d',
-
-                            800: '#731414',
-
-                            900: '#520b0b',
-
-                        },
-
-                        cream: {
-
-                            50: '#fffdf9',
-
-                            100: '#faf3e0',
-
-                            200: '#f5ebe0',
-
-                            300: '#ebd9c3',
-
-                            800: '#4a3828',
-
-                        },
-
-                        gold: {
-
-                            400: '#e6ca65',
-
-                            500: '#d4af37',
-
-                            600: '#b89222',
-
-                        }
-
-                    },
-
-                    fontFamily: {
-
-                        serif: ['"Noto Serif SC"', 'serif'],
-
-                        calli: ['"Ma Shan Zheng"', 'cursive'],
-
-                    }
-
-                }
-
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            lacquer: {
+              50: '#fdf2f2',
+              100: '#fde8e8',
+              700: '#8c1d1d',
+              800: '#731414',
+              900: '#520b0b'
+            },
+            cream: {
+              50: '#fffdf9',
+              100: '#faf3e0',
+              200: '#f5ebe0',
+              300: '#ebd9c3',
+              800: '#4a3828'
+            },
+            gold: {
+              400: '#e6ca65',
+              500: '#d4af37',
+              600: '#b89222'
             }
-
+          },
+          fontFamily: {
+            serif: ['"Noto Serif SC"', 'serif'],
+            calli: ['"Ma Shan Zheng"', 'cursive']
+          }
         }
+      }
+    }
+  </script>
 
-    </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
 
-
-
-    <!-- FontAwesome Icons -->
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Google Fonts -->
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
-
-
-
-    <!-- Firebase SDKs for Cloudflare Static Hosting -->
-
-    <script type="module">
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        import { getFirestore, collection, onSnapshot, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'changshou-86-reunion';
-
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyCBh2SXFqi2lmvdF4UBlGbtlVNMt69ugV8",
-            authDomain: "changshou-86-reunion.firebaseapp.com",
-            projectId: "changshou-86-reunion",
-            storageBucket: "changshou-86-reunion.firebasestorage.app",
-            messagingSenderId: "925003670680",
-            appId: "1:925003670680:web:5a33b0fe850b75c2cb9ced",
-            measurementId: "G-9YPXKHP59H"
-        };
-
-        const app = initializeApp(firebaseConfig);
-
-        const db = getFirestore(app);
-
-        const auth = getAuth(app);
-
-
-
-        window.db = db;
-
-        window.auth = auth;
-
-        window.appId = appId;
-
-        window.collection = collection;
-
-        window.onSnapshot = onSnapshot;
-
-        window.query = query;
-
-        window.doc = doc;
-
-        window.deleteDoc = deleteDoc;
-
-
-
-        let syncStarted = false;
-
-        function setSyncStatus(text, ok = true) {
-            const el = document.getElementById('syncStatus');
-            if (!el) return;
-            el.innerHTML = `<i class="fas fa-circle ${ok ? 'text-green-400' : 'text-red-500'} text-[8px] mr-1.5"></i> ${text}`;
-        }
-
-        async function initAuth() {
-            try {
-                setSyncStatus("正在连接数据库…", true);
-
-                const timeout = setTimeout(() => {
-                    if (!syncStarted) {
-                        setSyncStatus("连接超时", false);
-                        const body = document.getElementById('rsvpTableBody');
-                        if (body) {
-                            body.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-800 font-serif">
-                                Firebase 登录超时。请刷新页面重试。
-                            </td></tr>`;
-                        }
-                    }
-                }, 12000);
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (!user || syncStarted) return;
-
-                    syncStarted = true;
-                    clearTimeout(timeout);
-                    console.log("Admin anonymous auth ready:", user.uid);
-                    setSyncStatus("实时同步中", true);
-                    startRealtimeSync(user.uid);
-                });
-
-                if (!auth.currentUser) {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Auth error:", error);
-                setSyncStatus("连接失败", false);
-                const code = error?.code || error?.message || "unknown";
-                const body = document.getElementById('rsvpTableBody');
-                if (body) {
-                    body.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-800 font-serif">
-                        数据库连接失败：${code}
-                    </td></tr>`;
-                }
-            }
-        }
-
-        if (document.readyState === "loading") {
-            window.addEventListener('DOMContentLoaded', initAuth, { once: true });
-        } else {
-            initAuth();
-        }
-
-    </script>
-
-
-
-    <style>
-
-        body {
-
-            font-family: 'Noto Serif SC', serif;
-
-            background-color: #2b1212;
-
-            color: #4a3828;
-
-        }
-
-        .paper-texture {
-
-            background-color: #FAF3E0;
-
-            background-image: radial-gradient(#E8D7B8 0.75px, transparent 0.75px), radial-gradient(#E8D7B8 0.75px, #FAF3E0 0.75px);
-
-            background-size: 30px 30px;
-
-            background-position: 0 0, 15px 15px;
-
-        }
-
-    </style>
-
+  <style>
+    body {
+      font-family: 'Noto Serif SC', serif;
+      background-color: #2b1212;
+      color: #4a3828;
+    }
+    .paper-texture {
+      background-color: #FAF3E0;
+      background-image:
+        radial-gradient(#E8D7B8 0.75px, transparent 0.75px),
+        radial-gradient(#E8D7B8 0.75px, #FAF3E0 0.75px);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+    }
+  </style>
 </head>
 
 <body class="min-h-screen p-4 sm:p-8 flex flex-col items-center">
 
-    <!-- Simple password gate (client-side only) -->
-    <div id="adminLoginOverlay" class="fixed inset-0 z-[9999] bg-lacquer-900 flex items-center justify-center p-4">
-        <div class="paper-texture w-full max-w-sm rounded-2xl border-2 border-gold-500/60 shadow-2xl p-6 sm:p-8 text-center">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-lacquer-700 text-gold-400 flex items-center justify-center border-2 border-gold-500 shadow-lg">
-                <i class="fas fa-lock text-xl"></i>
-            </div>
-            <div class="text-xs tracking-[0.25em] text-lacquer-700/70 mb-2">长中八六高文科班</div>
-            <h2 class="font-calli text-3xl text-lacquer-700 mb-2">管理后台登录</h2>
-            <p class="text-xs text-cream-800/70 mb-5">请输入管理密码后查看报名反馈</p>
+  <!-- Password gate -->
+  <div id="loginOverlay" class="fixed inset-0 z-[9999] bg-lacquer-900 flex items-center justify-center p-4">
+    <div class="paper-texture w-full max-w-sm rounded-2xl border-2 border-gold-500/60 shadow-2xl p-7 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-lacquer-700 text-gold-400 flex items-center justify-center border-2 border-gold-500 shadow-lg">
+        <i class="fas fa-lock text-xl"></i>
+      </div>
+      <p class="text-xs tracking-[0.25em] text-lacquer-700/70 mb-2">长中八六高文科班</p>
+      <h2 class="font-calli text-3xl text-lacquer-700 mb-2">管理后台登录</h2>
+      <p class="text-xs text-cream-800/70 mb-5">请输入管理密码</p>
 
-            <form id="adminLoginForm" class="space-y-3">
-                <input
-                    id="adminPassword"
-                    type="password"
-                    inputmode="numeric"
-                    autocomplete="current-password"
-                    placeholder="请输入密码"
-                    class="w-full px-4 py-3 rounded-lg bg-cream-50 border border-lacquer-700/30 focus:outline-none focus:border-lacquer-700 text-center tracking-[0.25em]"
-                >
-                <button
-                    type="submit"
-                    class="w-full py-3 bg-lacquer-700 hover:bg-lacquer-800 text-gold-400 font-bold rounded-lg border border-gold-500/50 shadow transition"
-                >
-                    进入管理后台
-                </button>
-            </form>
+      <form id="loginForm" class="space-y-3">
+        <input
+          id="passwordInput"
+          type="password"
+          inputmode="numeric"
+          autocomplete="current-password"
+          placeholder="请输入密码"
+          class="w-full px-4 py-3 rounded-lg bg-cream-50 border border-lacquer-700/30 focus:outline-none focus:border-lacquer-700 text-center tracking-[0.25em]"
+        >
+        <button
+          type="submit"
+          class="w-full py-3 bg-lacquer-700 hover:bg-lacquer-800 text-gold-400 font-bold rounded-lg border border-gold-500/50 shadow transition"
+        >
+          进入管理后台
+        </button>
+      </form>
 
-            <p id="adminLoginError" class="hidden mt-3 text-sm text-red-700 font-semibold">
-                密码错误，请重新输入
-            </p>
+      <p id="loginError" class="hidden mt-3 text-sm text-red-700 font-semibold">密码错误，请重新输入</p>
+      <a href="index.html" class="inline-block mt-5 text-xs text-lacquer-700 underline">返回电子请柬</a>
+    </div>
+  </div>
 
-            <a href="index.html" class="inline-block mt-5 text-xs text-lacquer-700 underline">
-                返回电子请柬
-            </a>
-        </div>
+  <header class="w-full max-w-5xl bg-lacquer-900 border-2 border-gold-500/50 rounded-2xl p-6 text-cream-100 shadow-2xl mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center space-x-2">
+        <span class="px-2 py-0.5 bg-gold-500 text-lacquer-900 text-xs font-bold rounded">管理后台</span>
+        <span class="text-xs text-gold-400">1986 — 2026 毕业四十载</span>
+      </div>
+      <h1 class="font-calli text-3xl text-gold-400 mt-1">长中八六高文科班 • 报名管理</h1>
     </div>
 
+    <a href="index.html" class="px-4 py-2 bg-cream-100 hover:bg-cream-200 text-lacquer-900 font-bold rounded-lg text-sm shadow transition flex items-center">
+      <i class="fas fa-envelope-open-text mr-2"></i> 查看电子请柬
+    </a>
+  </header>
 
+  <main class="w-full max-w-5xl">
+    <section class="paper-texture rounded-2xl border-2 border-gold-500/40 shadow-xl p-6 sm:p-10 text-center">
+      <div class="w-20 h-20 mx-auto mb-5 rounded-full bg-lacquer-700 text-gold-400 flex items-center justify-center border-2 border-gold-500 shadow-lg">
+        <i class="fas fa-table-list text-2xl"></i>
+      </div>
 
+      <h2 class="font-calli text-3xl text-lacquer-700 mb-3">参会报名名单</h2>
+      <p class="text-sm text-cream-800/75 leading-relaxed max-w-xl mx-auto mb-6">
+        报名结果已与腾讯文档在线表格关联。点击下方按钮即可查看最新名单、筛选数据并进行统计。
+      </p>
 
-    <header class="w-full max-w-5xl bg-lacquer-900 border-2 border-gold-500/50 rounded-2xl p-6 text-cream-100 shadow-2xl mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <a
+        href="https://docs.qq.com/smartsheet/DUU1zc2hXVWhXb2RH?tab=ss_ukpwya"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center px-7 py-3.5 bg-lacquer-700 hover:bg-lacquer-800 text-gold-400 font-bold rounded-xl shadow-md border border-gold-500/50 transition active:scale-95"
+      >
+        <i class="fas fa-arrow-up-right-from-square mr-2"></i>
+        打开腾讯文档报名名单
+      </a>
 
-        <div>
-
-            <div class="flex items-center space-x-2">
-
-                <span class="px-2 py-0.5 bg-gold-500 text-lacquer-900 text-xs font-bold rounded">管理后台</span>
-
-                <span class="text-xs text-gold-400">1986 — 2026 毕业四十载</span>
-
-            </div>
-
-            <h1 class="font-calli text-3xl text-gold-400 mt-1">长中八六高文科班 • 实时签到反馈</h1>
-
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+        <div class="bg-cream-50 rounded-xl border border-gold-500/30 p-4">
+          <i class="fas fa-user-check text-lacquer-700 mb-2"></i>
+          <p class="font-semibold text-lacquer-800">实时查看</p>
+          <p class="text-xs text-cream-800/60 mt-1">新提交会同步到结果表</p>
         </div>
 
-        <div class="flex items-center space-x-3">
-
-            <a href="index.html" class="px-4 py-2 bg-cream-100 hover:bg-cream-200 text-lacquer-900 font-bold rounded-lg text-sm shadow transition flex items-center">
-
-                <i class="fas fa-envelope-open-text mr-2"></i> 查看电子请柬
-
-            </a>
-
-            <button onclick="exportData()" class="px-4 py-2 bg-gold-500 hover:bg-gold-600 text-lacquer-900 font-bold rounded-lg text-sm shadow transition flex items-center">
-
-                <i class="fas fa-download mr-2"></i> 导出名单
-
-            </button>
-
+        <div class="bg-cream-50 rounded-xl border border-gold-500/30 p-4">
+          <i class="fas fa-filter text-lacquer-700 mb-2"></i>
+          <p class="font-semibold text-lacquer-800">筛选统计</p>
+          <p class="text-xs text-cream-800/60 mt-1">可按参会状态等条件筛选</p>
         </div>
 
-    </header>
-
-
-
-    <main class="w-full max-w-5xl space-y-6">
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-
-            <div class="paper-texture p-5 rounded-xl border border-gold-500/40 shadow-md text-center">
-
-                <p class="text-xs text-lacquer-800/80 font-semibold mb-1">总提交反馈人数</p>
-
-                <h3 id="statTotal" class="text-3xl font-bold text-lacquer-900 font-serif">0</h3>
-
-            </div>
-
-            <div class="paper-texture p-5 rounded-xl border border-gold-500/40 shadow-md text-center">
-
-                <p class="text-xs text-lacquer-800/80 font-semibold mb-1">确认参加人数</p>
-
-                <h3 id="statAttend" class="text-3xl font-bold text-green-700 font-serif">0</h3>
-
-            </div>
-
-            <div class="paper-texture p-5 rounded-xl border border-gold-500/40 shadow-md text-center">
-
-                <p class="text-xs text-lacquer-800/80 font-semibold mb-1">携带家属总数</p>
-
-                <h3 id="statGuests" class="text-3xl font-bold text-gold-600 font-serif">0</h3>
-
-            </div>
-
-            <div class="paper-texture p-5 rounded-xl border border-gold-500/40 shadow-md text-center">
-
-                <p class="text-xs text-lacquer-800/80 font-semibold mb-1">遗憾无法参加</p>
-
-                <h3 id="statAbsents" class="text-3xl font-bold text-red-800 font-serif">0</h3>
-
-            </div>
-
+        <div class="bg-cream-50 rounded-xl border border-gold-500/30 p-4">
+          <i class="fas fa-file-export text-lacquer-700 mb-2"></i>
+          <p class="font-semibold text-lacquer-800">导出整理</p>
+          <p class="text-xs text-cream-800/60 mt-1">可在腾讯文档内导出和管理</p>
         </div>
-
-
-
-        <div class="paper-texture rounded-2xl border-2 border-gold-500/40 shadow-xl overflow-hidden">
-
-            <div class="bg-lacquer-800 text-cream-100 p-4 px-6 flex justify-between items-center border-b border-gold-500/30">
-
-                <h2 class="font-calli text-xl text-gold-400"><i class="fas fa-users mr-2"></i>同学参会实时同步列表</h2>
-
-                <span id="syncStatus" class="text-xs text-gold-300 flex items-center"><i class="fas fa-circle text-green-400 text-[8px] mr-1.5 animate-pulse"></i> 实时同步中</span>
-
-            </div>
-
-
-
-            <div class="overflow-x-auto">
-
-                <table class="w-full text-left border-collapse text-sm">
-
-                    <thead>
-
-                        <tr class="bg-cream-200/80 text-lacquer-900 border-b border-gold-500/30 font-semibold text-xs sm:text-sm">
-
-                            <th class="p-4">姓名</th>
-
-                            <th class="p-4">联系电话</th>
-
-                            <th class="p-4">参会状态</th>
-
-                            <th class="p-4">携带家属</th>
-
-                            <th class="p-4">同学寄语</th>
-
-                            <th class="p-4">提交时间</th>
-
-                            <th class="p-4 text-center">操作</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="rsvpTableBody" class="divide-y divide-cream-300 text-cream-800">
-
-                        <tr>
-
-                            <td colspan="7" class="p-8 text-center text-cream-800/60 font-serif">
-
-                                <i class="fas fa-spinner fa-spin mr-2"></i> 正在从云端加载实时数据...
-
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </main>
-
-
-
-    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-lacquer-900 border border-gold-500 text-cream-100 px-4 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-3">
-
-        <i id="toastIcon" class="fas fa-info-circle text-gold-400"></i>
-
-        <span id="toastMsg" class="text-sm font-serif">提示信息</span>
-
-    </div>
-
-
-
-    <script>
-
-        function startRealtimeSync(userId) {
-
-            const appId = window.appId;
-
-            const db = window.db;
-
-
-
-            const rsvpCollection = window.collection(db, 'artifacts', appId, 'public', 'data', 'rsvp_entries');
-
-            const q = window.query(rsvpCollection);
-
-
-
-            window.onSnapshot(q, (snapshot) => {
-
-                const entries = [];
-
-                snapshot.forEach((docSnap) => {
-
-                    entries.push({ id: docSnap.id, ...docSnap.data() });
-
-                });
-
-
-
-                entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-                updateDashboardUI(entries);
-
-            }, (error) => {
-
-                console.error("Firestore snapshot error:", error);
-                const code = error?.code || error?.message || "unknown";
-                const status = document.getElementById('syncStatus');
-                if (status) {
-                    status.innerHTML = '<i class="fas fa-circle text-red-500 text-[8px] mr-1.5"></i> 同步失败';
-                }
-                document.getElementById('rsvpTableBody').innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-800 font-serif">
-                    无法读取云端数据：${code}
-                </td></tr>`;
-
-            });
-
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const PASSWORD = "1986";
+      const STORAGE_KEY = "changshou86_admin_unlocked";
+
+      const overlay = document.getElementById("loginOverlay");
+      const form = document.getElementById("loginForm");
+      const input = document.getElementById("passwordInput");
+      const error = document.getElementById("loginError");
+
+      function unlock() {
+        overlay.style.display = "none";
+        document.body.style.overflow = "";
+      }
+
+      if (sessionStorage.getItem(STORAGE_KEY) === "yes") {
+        unlock();
+      } else {
+        document.body.style.overflow = "hidden";
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (input.value === PASSWORD) {
+          sessionStorage.setItem(STORAGE_KEY, "yes");
+          error.classList.add("hidden");
+          unlock();
+        } else {
+          error.classList.remove("hidden");
+          input.value = "";
+          input.focus();
         }
-
-
-
-        function updateDashboardUI(entries) {
-
-            const tableBody = document.getElementById('rsvpTableBody');
-
-            const statTotal = document.getElementById('statTotal');
-
-            const statAttend = document.getElementById('statAttend');
-
-            const statGuests = document.getElementById('statGuests');
-
-            const statAbsents = document.getElementById('statAbsents');
-
-
-
-            statTotal.innerText = entries.length;
-
-
-
-            let attendCount = 0;
-
-            let guestCount = 0;
-
-            let absentCount = 0;
-
-
-
-            if (entries.length === 0) {
-
-                tableBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-cream-800/60 font-serif">暂无同学提交反馈，请前往邀请函页面填写。</td></tr>`;
-
-                statAttend.innerText = 0;
-
-                statGuests.innerText = 0;
-
-                statAbsents.innerText = 0;
-
-                return;
-
-            }
-
-
-
-            let html = '';
-
-            entries.forEach(item => {
-
-                const isAttend = item.attend === '参加';
-
-                if (isAttend) {
-
-                    attendCount++;
-
-                    const gNum = parseInt(item.guests) || 0;
-
-                    guestCount += gNum;
-
-                } else {
-
-                    absentCount++;
-
-                }
-
-
-
-                const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleString('zh-CN', { hour12: false }) : '刚刚';
-
-
-
-                html += `
-
-                    <tr class="hover:bg-cream-100/50 transition">
-
-                        <td class="p-4 font-bold text-lacquer-900">${escapeHtml(item.name)}</td>
-
-                        <td class="p-4"><a href="tel:${escapeHtml(item.phone)}" class="text-lacquer-700 underline font-semibold">${escapeHtml(item.phone)}</a></td>
-
-                        <td class="p-4">
-
-                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${isAttend ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300'}">
-
-                                ${escapeHtml(item.attend)}
-
-                            </span>
-
-                        </td>
-
-                        <td class="p-4 font-semibold text-lacquer-800">${escapeHtml(item.guests || '0')} 人</td>
-
-                        <td class="p-4 text-xs text-cream-800/90 max-w-xs truncate" title="${escapeHtml(item.note || '')}">${escapeHtml(item.note || '无')}</td>
-
-                        <td class="p-4 text-xs text-cream-800/70">${dateStr}</td>
-
-                        <td class="p-4 text-center">
-
-                            <button onclick="deleteEntry('${item.id}', '${escapeHtml(item.name)}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded transition" title="删除记录">
-
-                                <i class="fas fa-trash-alt text-xs"></i>
-
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            });
-
-
-
-            tableBody.innerHTML = html;
-
-            statAttend.innerText = attendCount;
-
-            statGuests.innerText = guestCount;
-
-            statAbsents.innerText = absentCount;
-
-        }
-
-
-
-        async function deleteEntry(docId, studentName) {
-
-            if (!confirm(`确定要删除 ${studentName} 同学的反馈记录吗？`)) return;
-
-            try {
-
-                const appId = window.appId;
-
-                const db = window.db;
-
-                await window.deleteDoc(window.doc(db, 'artifacts', appId, 'public', 'data', 'rsvp_entries', docId));
-
-                showNotification(`已成功删除 ${studentName} 的记录`, "success");
-
-            } catch (e) {
-
-                console.error(e);
-
-                showNotification("删除失败，请重试", "error");
-
-            }
-
-        }
-
-
-
-        function exportData() {
-
-            showNotification("正在生成名单表格...", "success");
-
-            const rows = document.querySelectorAll('#rsvpTableBody tr');
-
-            let csv = '\uFEFF姓名,联系电话,参会状态,携带家属,同学寄语,提交时间\n';
-
-            rows.forEach(tr => {
-
-                const cols = tr.querySelectorAll('td');
-
-                if (cols.length >= 6) {
-
-                    const name = cols[0].innerText.trim();
-
-                    const phone = cols[1].innerText.trim();
-
-                    const status = cols[2].innerText.trim();
-
-                    const guests = cols[3].innerText.trim();
-
-                    const note = cols[4].innerText.trim().replace(/"/g, '""');
-
-                    const time = cols[5].innerText.trim();
-
-                    csv += `"${name}","${phone}","${status}","${guests}","${note}","${time}"\n`;
-
-                }
-
-            });
-
-
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-
-            const url = URL.createObjectURL(blob);
-
-            const a = document.createElement('a');
-
-            a.href = url;
-
-            a.download = `长中八六高文科班同学会反馈名单_${new Date().toISOString().slice(0, 10)}.csv`;
-
-            document.body.appendChild(a);
-
-            a.click();
-
-            document.body.removeChild(a);
-
-        }
-
-
-
-        function showNotification(msg, type = "success") {
-
-            const toast = document.getElementById('toast');
-
-            const toastMsg = document.getElementById('toastMsg');
-
-            const toastIcon = document.getElementById('toastIcon');
-
-
-
-            toastMsg.innerText = msg;
-
-            if (type === "success") {
-
-                toastIcon.className = "fas fa-check-circle text-green-400";
-
-            } else {
-
-                toastIcon.className = "fas fa-exclamation-circle text-red-400";
-
-            }
-
-
-
-            toast.classList.remove('translate-y-20', 'opacity-0');
-
-            setTimeout(() => {
-
-                toast.classList.add('translate-y-20', 'opacity-0');
-
-            }, 3000);
-
-        }
-
-
-
-        function escapeHtml(text) {
-
-            if (!text) return '';
-
-            return String(text)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-
-        }
-
-    </script>
-
-
-    <script>
-        (function () {
-            const PASSWORD = "1986";
-            const STORAGE_KEY = "changshou86_admin_unlocked";
-
-            function unlockAdmin() {
-                const overlay = document.getElementById("adminLoginOverlay");
-                if (overlay) overlay.style.display = "none";
-                document.body.style.overflow = "";
-            }
-
-            function lockAdmin() {
-                document.body.style.overflow = "hidden";
-            }
-
-            document.addEventListener("DOMContentLoaded", function () {
-                const form = document.getElementById("adminLoginForm");
-                const input = document.getElementById("adminPassword");
-                const error = document.getElementById("adminLoginError");
-
-                if (sessionStorage.getItem(STORAGE_KEY) === "yes") {
-                    unlockAdmin();
-                    return;
-                }
-
-                lockAdmin();
-
-                form.addEventListener("submit", function (e) {
-                    e.preventDefault();
-
-                    if (input.value === PASSWORD) {
-                        sessionStorage.setItem(STORAGE_KEY, "yes");
-                        error.classList.add("hidden");
-                        unlockAdmin();
-                    } else {
-                        error.classList.remove("hidden");
-                        input.value = "";
-                        input.focus();
-                    }
-                });
-            });
-        })();
-    </script>
-
+      });
+    })();
+  </script>
 </body>
-
 </html>
