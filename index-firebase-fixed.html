@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>长中八六高文科班 同学会邀请函</title>
+
+
+
+    <!-- Tailwind CSS Script -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+
+        window.tailwind.config = {
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        lacquer: {
+
+                            50: '#fdf2f2',
+
+                            100: '#fde8e8',
+
+                            600: '#a61b1b',
+
+                            700: '#8c1d1d',
+
+                            800: '#731414',
+
+                            900: '#520b0b',
+
+                        },
+
+                        cream: {
+
+                            50: '#fffdf9',
+
+                            100: '#faf3e0',
+
+                            200: '#f5ebe0',
+
+                            300: '#ebd9c3',
+
+                            800: '#4a3828',
+
+                        },
+
+                        gold: {
+
+                            400: '#e6ca65',
+
+                            500: '#d4af37',
+
+                            600: '#b89222',
+
+                        }
+
+                    },
+
+                    fontFamily: {
+
+                        serif: ['"Noto Serif SC"', 'serif'],
+
+                        calli: ['"Ma Shan Zheng"', 'cursive'],
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    </script>
+
+
+
+    <!-- FontAwesome Icons -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+
+
+
+    <!-- Firebase SDKs for Cloudflare Static Hosting -->
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+
+        // Cloudflare / Static fallback configuration
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'changshou-86-reunion';
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyCBh2SXFqi2lmvdF4UBlGbtlVNMt69ugV8",
+            authDomain: "changshou-86-reunion.firebaseapp.com",
+            projectId: "changshou-86-reunion",
+            storageBucket: "changshou-86-reunion.firebasestorage.app",
+            messagingSenderId: "925003670680",
+            appId: "1:925003670680:web:5a33b0fe850b75c2cb9ced",
+            measurementId: "G-9YPXKHP59H"
+        };
+
+        const customAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+
+
+
+        const app = initializeApp(firebaseConfig);
+
+        const db = getFirestore(app);
+
+        const auth = getAuth(app);
+
+
+
+        window.db = db;
+
+        window.auth = auth;
+
+        window.appId = appId;
+
+        window.collection = collection;
+
+        window.addDoc = addDoc;
+
+
+
+        async function initAuth() {
+            if (auth.currentUser) return auth.currentUser;
+            if (customAuthToken) {
+                await signInWithCustomToken(auth, customAuthToken);
+            } else {
+                await signInAnonymously(auth);
+            }
+            console.log("Firebase anonymous authentication ready:", auth.currentUser?.uid);
+            return auth.currentUser;
+        }
+
+        window.firebaseReady = initAuth().catch((e) => {
+            console.error("Firebase auth initialization failed:", e);
+            throw e;
+        });
+
+    </script>
+
+
+
+    <style>
+
+        body {
+
+            font-family: 'Noto Serif SC', serif;
+
+            background-color: #2b1212;
+
+            overflow: hidden;
+
+            touch-action: pan-y;
+
+            user-select: none;
+
+            -webkit-user-select: none;
+
+        }
+
+        .paper-texture {
+
+            background-color: #FAF3E0;
+
+            background-image: radial-gradient(#E8D7B8 0.75px, transparent 0.75px), radial-gradient(#E8D7B8 0.75px, #FAF3E0 0.75px);
+
+            background-size: 30px 30px;
+
+            background-position: 0 0, 15px 15px;
+
+        }
+
+        .cn-border {
+
+            border: 2px solid #8C1D1D;
+
+            position: relative;
+
+        }
+
+        .cn-border::before, .cn-border::after {
+
+            content: '';
+
+            position: absolute;
+
+            width: 12px;
+
+            height: 12px;
+
+            border: 2px solid #D4AF37;
+
+        }
+
+        .cn-border::before { top: 4px; left: 4px; border-right: none; border-bottom: none; }
+
+        .cn-border::after { bottom: 4px; right: 4px; border-left: none; border-top: none; }
+
+        .envelope-wrapper { perspective: 1000px; }
+
+        .envelope {
+
+            position: relative;
+
+            transform-style: preserve-3d;
+
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+        }
+
+        .envelope-flap {
+
+            transform-origin: top center;
+
+            transition: transform 0.6s ease-in-out;
+
+            z-index: 30;
+
+        }
+
+        .envelope-flap.open {
+
+            transform: rotateX(180deg);
+
+            z-index: 10;
+
+        }
+
+        .slide {
+
+            transition: opacity 0.5s ease, transform 0.5s ease;
+
+            position: absolute;
+
+            inset: 0;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transform: translateY(20px) scale(0.97);
+
+        }
+
+        .slide.active {
+
+            opacity: 1;
+
+            pointer-events: auto;
+
+            transform: translateY(0) scale(1);
+
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+
+        .custom-scroll::-webkit-scrollbar-thumb { background: #8C1D1D; border-radius: 4px; }
+
+        @keyframes goldGlow {
+
+            0%, 100% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+
+            50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.8); }
+
+        }
+
+        .gold-glow { animation: goldGlow 2.5s infinite; }
+
+    </style>
+
+</head>
+
+<body class="flex items-center justify-center min-h-screen p-0 sm:p-4 text-cream-800">
+
+
+
+    <canvas id="petalCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+
+
+    <div class="fixed top-4 right-4 z-50 flex items-center space-x-2">
+
+        <a href="admin.html" class="px-3 py-1.5 bg-lacquer-800/90 border border-gold-500 text-gold-400 text-xs rounded-full shadow hover:bg-lacquer-900 transition flex items-center">
+
+            <i class="fas fa-shield-alt mr-1"></i> 管理后台
+
+        </a>
+
+        <button id="musicBtn" class="w-10 h-10 rounded-full bg-lacquer-800/80 border border-gold-500 text-gold-400 flex items-center justify-center shadow-lg active:scale-95 transition-transform" aria-label="播放背景音乐">
+
+            <i id="musicIcon" class="fas fa-music text-sm animate-spin" style="animation-duration: 4s;"></i>
+
+        </button>
+
+    </div>
+
+
+
+    <div class="relative w-full max-w-md h-[100vh] sm:h-[844px] sm:max-h-[92vh] bg-lacquer-900 sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col border-0 sm:border-4 border-gold-500/40">
+
+
+
+        <!-- Envelope Opening Overlay -->
+
+        <div id="envelopeOverlay" class="absolute inset-0 z-40 bg-lacquer-900 flex flex-col items-center justify-center p-6 transition-opacity duration-700">
+
+            <div class="text-center mb-6">
+
+                <span class="inline-block text-gold-400 text-xs tracking-[0.3em] font-semibold border-b border-gold-500/50 pb-1 mb-2">1986 — 2026 • 毕业四十载</span>
+
+                <h1 class="font-calli text-3xl text-cream-100 tracking-wider">长中八六高文科班</h1>
+
+                <p class="font-serif text-gold-400 text-sm mt-1">同学聚会邀请函</p>
+
+            </div>
+
+
+
+            <div class="envelope-wrapper w-full max-w-[320px] h-[220px] relative cursor-pointer" id="envelopeClickArea">
+
+                <div class="envelope w-full h-full bg-cream-100 rounded-lg shadow-2xl border-2 border-gold-600/40 relative overflow-hidden flex flex-col justify-between p-4">
+
+                    <div id="envelopeFlap" class="envelope-flap absolute top-0 left-0 right-0 h-28 bg-cream-200 border-b-2 border-gold-500/30 flex items-center justify-center shadow-md origin-top" style="clip-path: polygon(0 0, 100% 0, 50% 100%);">
+
+                    </div>
+
+                    <div id="waxSeal" class="absolute top-20 left-1/2 -translate-x-1/2 z-40 w-16 h-16 rounded-full bg-lacquer-700 border-2 border-gold-400 flex items-center justify-center shadow-lg gold-glow transition-transform duration-300 hover:scale-105 active:scale-95">
+
+                        <div class="w-12 h-12 rounded-full border border-gold-500/60 flex items-center justify-center text-gold-400 font-calli text-xl">
+
+                            八六
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-auto text-center border-t border-lacquer-800/10 pt-2">
+
+                        <p class="font-serif text-xs text-lacquer-800/70 tracking-widest">请展开此信</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="mt-8 text-center animate-bounce">
+
+                <p class="text-gold-400/90 text-sm font-serif"><i class="fas fa-hand-pointer mr-2"></i>点击封印 开启回忆</p>
+
+            </div>
+
+        </div>
+
+
+
+        <main id="mainContent" class="relative flex-1 w-full h-full overflow-hidden">
+
+
+
+            <!-- SLIDE 1: Cover Header -->
+
+            <section class="slide active paper-texture flex flex-col justify-between p-6 sm:p-8" data-index="0">
+
+                <div class="flex justify-between items-center text-lacquer-700 text-xs border-b border-lacquer-700/20 pb-2">
+
+                    <span>长寿中学</span>
+
+                    <span>八六高文科班</span>
+
+                    <span>1986 - 2026</span>
+
+                </div>
+
+
+
+                <div class="my-auto text-center py-4">
+
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-lacquer-700 text-gold-400 flex items-center justify-center shadow-md border-2 border-gold-500">
+
+                        <span class="font-calli text-2xl">聚</span>
+
+                    </div>
+
+
+
+                    <p class="text-lacquer-800 text-sm tracking-[0.2em] font-semibold mb-1">时光荏苒 • 肆拾载重逢</p>
+
+                    <h2 class="font-calli text-4xl text-lacquer-700 my-2 tracking-wide">同学会邀请函</h2>
+
+                    <p class="text-xs text-cream-800/80 font-serif max-w-xs mx-auto leading-relaxed mt-3">
+
+                        两载同窗刻心烙，青春少年今花甲<br>唯记长中同学窗，魂牵梦绕千百回
+
+                    </p>
+
+                </div>
+
+
+
+                <div class="cn-border p-4 text-center bg-cream-50/80 rounded">
+
+                    <p class="text-xs text-lacquer-800 font-semibold">聚会时间：10月17日 - 10月18日</p>
+
+                    <p class="text-[11px] text-cream-800/70 mt-1">地点：长寿湖乐温院子宾馆</p>
+
+                </div>
+
+
+
+                <div class="text-center text-lacquer-700/60 text-xs pt-2 animate-pulse">
+
+                    向上滑动 / 点击下方开启 <i class="fas fa-chevron-down ml-1"></i>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- SLIDE 2: Memory & Poem -->
+
+            <section class="slide paper-texture flex flex-col justify-between p-6 sm:p-8" data-index="1">
+
+                <div class="border-b-2 border-lacquer-700/20 pb-2 flex justify-between items-baseline">
+
+                    <h3 class="font-calli text-2xl text-lacquer-700">岁月如歌</h3>
+
+                    <span class="text-xs text-lacquer-800/60 font-serif">同窗寄语</span>
+
+                </div>
+
+
+
+                <div class="my-auto custom-scroll overflow-y-auto max-h-[62vh] my-2 pr-1 text-sm leading-relaxed text-cream-800 font-serif space-y-4">
+
+                    <div class="p-4 bg-cream-50/90 rounded border-l-4 border-lacquer-700 shadow-sm">
+
+                        <p class="indent-6 text-lacquer-900">
+
+                            山无棱，海无涯，流水易逝人渐老，两载同窗刻心烙，青春少年今花甲，唯记长中同学窗，魂牵梦绕千百回。
+
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="p-4 bg-cream-50/90 rounded border-l-4 border-gold-500 shadow-sm">
+
+                        <p class="indent-6 text-cream-800">
+
+                            湖塘荷叶小炒挤，临庄门口炸饺热，操场足球场地争，进修学校双层铺，后门几个烟哥贼，中午偷游山洞沟，川大西政电大校，皆我毕业必窜地。政法学校财工商，一听同学立见面。
+
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="p-4 bg-cream-50/90 rounded border-l-4 border-lacquer-700 shadow-sm">
+
+                        <p class="indent-6 text-lacquer-900">
+
+                            如今毕业四十载，退休养老保健康，带子养孙研究生，畅谈晚年幸福生。
+
+                        </p>
+
+                        <p class="text-right text-xs font-semibold text-lacquer-700 mt-2">—— 岁宜老，情永铭</p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="text-center text-lacquer-700/60 text-xs pt-2 animate-pulse">
+
+                    滑动查看聚会日程 <i class="fas fa-chevron-down ml-1"></i>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- SLIDE 3: Event Schedule & Details -->
+
+            <section class="slide paper-texture flex flex-col justify-between p-6 sm:p-8" data-index="2">
+
+                <div class="border-b-2 border-lacquer-700/20 pb-2 flex justify-between items-baseline">
+
+                    <h3 class="font-calli text-2xl text-lacquer-700">聚会安排</h3>
+
+                    <span class="text-xs text-gold-600 font-serif font-bold">10月17日 - 18日</span>
+
+                </div>
+
+
+
+                <div class="my-auto custom-scroll overflow-y-auto max-h-[64vh] my-2 space-y-4 text-xs sm:text-sm font-serif">
+
+                    <div class="bg-cream-50 rounded-lg p-4 border border-gold-500/40 shadow-sm relative overflow-hidden">
+
+                        <div class="absolute top-0 right-0 bg-lacquer-700 text-gold-400 text-[10px] px-2 py-0.5 rounded-bl font-semibold">第一天</div>
+
+                        <h4 class="font-bold text-lacquer-700 text-base mb-2"><i class="far fa-calendar-alt mr-2"></i>10月17日 (星期六)</h4>
+
+                        <ul class="space-y-2 text-cream-800/90">
+
+                            <li class="flex items-start">
+
+                                <span class="inline-block bg-lacquer-100 text-lacquer-700 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">15:00</span>
+
+                                <span>报到入住：<b>长寿湖乐温院子宾馆</b></span>
+
+                            </li>
+
+                            <li class="flex items-start">
+
+                                <span class="inline-block bg-lacquer-100 text-lacquer-700 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">16:00</span>
+
+                                <span>举行茶话会，畅叙同窗情谊</span>
+
+                            </li>
+
+                            <li class="flex items-start">
+
+                                <span class="inline-block bg-lacquer-100 text-lacquer-700 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">18:00</span>
+
+                                <span>集体晚餐，欢聚一堂</span>
+
+                            </li>
+
+                            <li class="flex items-start">
+
+                                <span class="inline-block bg-lacquer-100 text-lacquer-700 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">19:30</span>
+
+                                <span>观看长寿湖烟花大会</span>
+
+                            </li>
+
+                            <li class="flex items-start">
+
+                                <span class="inline-block bg-lacquer-100 text-lacquer-700 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">晚上</span>
+
+                                <span>夜游畅聊，自由活动，住宿乐温院子宾馆</span>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+
+                    <div class="bg-cream-50 rounded-lg p-4 border border-gold-500/40 shadow-sm relative overflow-hidden">
+
+                        <div class="absolute top-0 right-0 bg-gold-500 text-lacquer-900 text-[10px] px-2 py-0.5 rounded-bl font-semibold">第二天</div>
+
+                        <h4 class="font-bold text-lacquer-700 text-base mb-2"><i class="far fa-calendar-check mr-2"></i>10月18日 (星期日)</h4>
+
+                        <ul class="space-y-2 text-cream-800/90">
+
+                            <li class="flex items-start">
+
+                                <span class="inline-block bg-gold-400/30 text-lacquer-800 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">上午</span>
+
+                                <span>自由组队游览老长中、三倒拐、河街新桥等故地重游</span>
+
+                            </li>
+
+                            <li class="flex items-start">
+
+                                <span class="inline-block bg-gold-400/30 text-lacquer-800 font-bold px-1.5 py-0.5 rounded text-xs mr-2 shrink-0">12:00</span>
+
+                                <span>集体午餐，餐后合影告别，聚会圆满结束</span>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+
+                    <div class="bg-lacquer-700/5 p-3 rounded border border-lacquer-700/20 text-xs text-lacquer-800">
+
+                        <p><i class="fas fa-coins text-gold-600 mr-1"></i> <b>费用预算：</b> 预计每人 <b>500元</b>，多退少补。</p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="text-center text-lacquer-700/60 text-xs pt-2 animate-pulse">
+
+                    滑动填写出席回执 <i class="fas fa-chevron-down ml-1"></i>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- SLIDE 4: Interactive RSVP Form & Contacts -->
+
+            <section class="slide paper-texture flex flex-col justify-between p-6 sm:p-8" data-index="3">
+
+                <div class="border-b-2 border-lacquer-700/20 pb-2 flex justify-between items-baseline">
+
+                    <h3 class="font-calli text-2xl text-lacquer-700">参会回执</h3>
+
+                    <span class="text-xs text-lacquer-800/70 font-serif">请于10月10日前确认</span>
+
+                </div>
+
+
+
+                <form id="rsvpForm" class="my-auto space-y-3 font-serif text-xs sm:text-sm">
+
+                    <div>
+
+                        <label class="block text-lacquer-800 font-semibold mb-1">您的姓名 <span class="text-red-600">*</span></label>
+
+                        <input type="text" id="userName" required placeholder="请输入同学姓名" class="w-full px-3 py-2 rounded bg-cream-50 border border-lacquer-700/30 focus:outline-none focus:border-lacquer-700 transition">
+
+                    </div>
+
+
+
+                    <div>
+
+                        <label class="block text-lacquer-800 font-semibold mb-1">联系电话 <span class="text-red-600">*</span></label>
+
+                        <input type="tel" id="userPhone" required placeholder="请输入手机号码" class="w-full px-3 py-2 rounded bg-cream-50 border border-lacquer-700/30 focus:outline-none focus:border-lacquer-700 transition">
+
+                    </div>
+
+
+
+                    <div class="grid grid-cols-2 gap-3">
+
+                        <div>
+
+                            <label class="block text-lacquer-800 font-semibold mb-1">是否参加</label>
+
+                            <select id="userAttend" class="w-full px-3 py-2 rounded bg-cream-50 border border-lacquer-700/30 focus:outline-none focus:border-lacquer-700 transition">
+
+                                <option value="参加">确认参加</option>
+
+                                <option value="遗憾无法参加">遗憾无法参加</option>
+
+                            </select>
+
+                        </div>
+
+                        <div>
+
+                            <label class="block text-lacquer-800 font-semibold mb-1">携带家属人数</label>
+
+                            <select id="userGuests" class="w-full px-3 py-2 rounded bg-cream-50 border border-lacquer-700/30 focus:outline-none focus:border-lacquer-700 transition">
+
+                                <option value="0">仅自己 (0人)</option>
+
+                                <option value="1">携带 1 人</option>
+
+                                <option value="2">携带 2 人</option>
+
+                                <option value="3">携带 3 人</option>
+
+                                <option value="4">携带 4人及以上</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div>
+
+                        <label class="block text-lacquer-800 font-semibold mb-1">给同学们的寄语 / 备注</label>
+
+                        <textarea id="userNote" rows="2" placeholder="写下您想对老同学说的话..." class="w-full px-3 py-2 rounded bg-cream-50 border border-lacquer-700/30 focus:outline-none focus:border-lacquer-700 transition"></textarea>
+
+                    </div>
+
+
+
+                    <button type="submit" id="submitBtn" class="w-full py-2.5 bg-lacquer-700 hover:bg-lacquer-800 text-gold-400 font-bold rounded shadow-md border border-gold-500/50 transition active:scale-98 flex items-center justify-center">
+
+                        <i class="fas fa-paper-plane mr-2"></i> 提交出席确认
+
+                    </button>
+
+                </form>
+
+
+
+                <div class="bg-cream-50 p-3 rounded border border-gold-500/40 mt-1">
+
+                    <p class="text-xs text-lacquer-800 font-bold mb-1"><i class="fas fa-phone-alt text-lacquer-700 mr-1"></i> 报名及缴费筹委会联系人：</p>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+
+                        <div class="flex items-center justify-between p-1.5 bg-cream-100 rounded border border-cream-300">
+
+                            <span>陈英</span>
+
+                            <a href="tel:13983002054" class="text-lacquer-700 font-bold underline">13983002054</a>
+
+                        </div>
+
+                        <div class="flex items-center justify-between p-1.5 bg-cream-100 rounded border border-cream-300">
+
+                            <span>刘凯</span>
+
+                            <a href="tel:13500307407" class="text-lacquer-700 font-bold underline">13500307407</a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+        </main>
+
+
+
+        <footer class="h-14 bg-lacquer-900 border-t border-gold-500/30 flex items-center justify-between px-6 z-30">
+
+            <button id="prevBtn" class="text-gold-400/60 hover:text-gold-400 disabled:opacity-30 disabled:pointer-events-none transition" disabled>
+
+                <i class="fas fa-chevron-left text-lg"></i>
+
+            </button>
+
+            <div class="flex space-x-2" id="dotsContainer">
+
+                <span class="dot w-2.5 h-2.5 rounded-full bg-gold-500 transition-all duration-300"></span>
+
+                <span class="dot w-2.5 h-2.5 rounded-full bg-gold-500/30 transition-all duration-300"></span>
+
+                <span class="dot w-2.5 h-2.5 rounded-full bg-gold-500/30 transition-all duration-300"></span>
+
+                <span class="dot w-2.5 h-2.5 rounded-full bg-gold-500/30 transition-all duration-300"></span>
+
+            </div>
+
+
+
+            <button id="nextBtn" class="text-gold-400/60 hover:text-gold-400 disabled:opacity-30 disabled:pointer-events-none transition">
+
+                <i class="fas fa-chevron-right text-lg"></i>
+
+            </button>
+
+        </footer>
+
+
+
+    </div>
+
+
+
+    <div id="statusModal" class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 hidden">
+
+        <div class="bg-cream-100 rounded-xl max-w-xs w-full p-6 text-center border-2 border-gold-500 shadow-2xl transform scale-95 transition-transform" id="modalCard">
+
+            <div class="w-12 h-12 bg-lacquer-700 text-gold-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+
+                <i class="fas fa-heart"></i>
+
+            </div>
+
+            <h4 class="font-calli text-2xl text-lacquer-700 mb-2" id="modalTitle">提交成功</h4>
+
+            <p class="text-xs text-cream-800 font-serif leading-relaxed mb-4" id="modalMsg">感谢您的确认！期待十月十七日与您在长寿湖相聚！</p>
+
+            <button id="closeModalBtn" class="w-full py-2 bg-lacquer-700 text-gold-400 font-bold rounded hover:bg-lacquer-800 transition">
+
+                好的，我知道了
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        let currentSlide = 0;
+
+        const totalSlides = 4;
+
+        let isEnvelopeOpen = false;
+
+
+
+        let audioCtx = null;
+
+        let isPlayingAudio = false;
+
+        let audioInterval = null;
+
+
+
+        function initSynthAudio() {
+
+            if (audioCtx) return;
+
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+            audioCtx = new AudioContext();
+
+        }
+
+
+
+        function playNostalgicMelody() {
+
+            if (!audioCtx) initSynthAudio();
+
+            if (audioCtx && audioCtx.state === 'suspended') {
+
+                audioCtx.resume();
+
+            }
+
+
+
+            const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+
+            let step = 0;
+
+
+
+            audioInterval = setInterval(() => {
+
+                if (!isPlayingAudio) return;
+
+                try {
+
+                    const osc = audioCtx.createOscillator();
+
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sine';
+
+                    const freq = notes[(step * 2 + (step % 3)) % notes.length];
+
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+
+                    osc.connect(gain);
+
+                    gain.connect(audioCtx.destination);
+
+                    osc.start();
+
+                    osc.stop(audioCtx.currentTime + 1.2);
+
+                    step++;
+
+                } catch (e) {}
+
+            }, 800);
+
+        }
+
+
+
+        function stopSynthAudio() {
+
+            if (audioInterval) clearInterval(audioInterval);
+
+            isPlayingAudio = false;
+
+        }
+
+
+
+        const musicBtn = document.getElementById('musicBtn');
+
+        const musicIcon = document.getElementById('musicIcon');
+
+
+
+        musicBtn.addEventListener('click', () => {
+
+            if (!isPlayingAudio) {
+
+                isPlayingAudio = true;
+
+                playNostalgicMelody();
+
+                musicIcon.classList.add('animate-spin');
+
+                musicBtn.classList.remove('opacity-60');
+
+            } else {
+
+                stopSynthAudio();
+
+                musicIcon.classList.remove('animate-spin');
+
+                musicBtn.classList.add('opacity-60');
+
+            }
+
+        });
+
+
+
+        const envelopeClickArea = document.getElementById('envelopeClickArea');
+
+        const envelopeFlap = document.getElementById('envelopeFlap');
+
+        const envelopeOverlay = document.getElementById('envelopeOverlay');
+
+
+
+        envelopeClickArea.addEventListener('click', openEnvelope);
+
+
+
+        function openEnvelope() {
+
+            if (isEnvelopeOpen) return;
+
+            isEnvelopeOpen = true;
+
+
+
+            if (!isPlayingAudio) {
+
+                isPlayingAudio = true;
+
+                playNostalgicMelody();
+
+            }
+
+
+
+            envelopeFlap.classList.add('open');
+
+
+
+            setTimeout(() => {
+
+                envelopeOverlay.style.opacity = '0';
+
+                envelopeOverlay.style.pointerEvents = 'none';
+
+                setTimeout(() => {
+
+                    envelopeOverlay.style.display = 'none';
+
+                }, 700);
+
+            }, 500);
+
+        }
+
+
+
+        const slides = document.querySelectorAll('.slide');
+
+        const dots = document.querySelectorAll('.dot');
+
+        const prevBtn = document.getElementById('prevBtn');
+
+        const nextBtn = document.getElementById('nextBtn');
+
+
+
+        function updateSlidePosition(index) {
+
+            if (index < 0 || index >= totalSlides) return;
+
+            slides.forEach((slide, idx) => {
+
+                slide.classList.toggle('active', idx === index);
+
+            });
+
+
+
+            dots.forEach((dot, idx) => {
+
+                if (idx === index) {
+
+                    dot.classList.remove('bg-gold-500/30');
+
+                    dot.classList.add('bg-gold-500', 'w-5');
+
+                } else {
+
+                    dot.classList.remove('bg-gold-500', 'w-5');
+
+                    dot.classList.add('bg-gold-500/30', 'w-2.5');
+
+                }
+
+            });
+
+
+
+            currentSlide = index;
+
+            prevBtn.disabled = currentSlide === 0;
+
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+        }
+
+
+
+        prevBtn.addEventListener('click', () => updateSlidePosition(currentSlide - 1));
+
+        nextBtn.addEventListener('click', () => updateSlidePosition(currentSlide + 1));
+
+
+
+        let touchStartY = 0;
+
+        let touchEndY = 0;
+
+        const mainContent = document.getElementById('mainContent');
+
+
+
+        mainContent.addEventListener('touchstart', (e) => {
+
+            touchStartY = e.changedTouches[0].screenY;
+
+        }, { passive: true });
+
+
+
+        mainContent.addEventListener('touchend', (e) => {
+
+            touchEndY = e.changedTouches[0].screenY;
+
+            handleSwipe();
+
+        }, { passive: true });
+
+
+
+        function handleSwipe() {
+
+            const distance = touchStartY - touchEndY;
+
+            if (Math.abs(distance) > 40) {
+
+                if (distance > 0 && currentSlide < totalSlides - 1) {
+
+                    updateSlidePosition(currentSlide + 1);
+
+                } else if (distance < 0 && currentSlide > 0) {
+
+                    updateSlidePosition(currentSlide - 1);
+
+                }
+
+            }
+
+        }
+
+
+
+        const rsvpForm = document.getElementById('rsvpForm');
+
+        const statusModal = document.getElementById('statusModal');
+
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        const modalTitle = document.getElementById('modalTitle');
+
+        const modalMsg = document.getElementById('modalMsg');
+
+
+
+        rsvpForm.addEventListener('submit', async (e) => {
+
+            e.preventDefault();
+
+            const name = document.getElementById('userName').value.trim();
+
+            const phone = document.getElementById('userPhone').value.trim();
+
+            const attend = document.getElementById('userAttend').value;
+
+            const guests = document.getElementById('userGuests').value;
+
+            const note = document.getElementById('userNote').value.trim();
+
+
+
+            if (!name || !phone) return;
+
+
+
+            const submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.disabled = true;
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 正在提交至云端...';
+
+
+
+            try {
+
+                await window.firebaseReady;
+                if (!window.auth.currentUser) {
+                    throw new Error("Anonymous authentication did not complete.");
+                }
+
+                const appId = window.appId;
+
+                const db = window.db;
+
+                // Cloudflare / Firebase Public Collection Path RULE 1
+
+                const colRef = window.collection(db, 'artifacts', appId, 'public', 'data', 'rsvp_entries');
+
+                await window.addDoc(colRef, {
+
+                    name: name,
+
+                    phone: phone,
+
+                    attend: attend,
+
+                    guests: guests,
+
+                    note: note,
+
+                    createdAt: Date.now()
+
+                });
+
+
+
+                modalTitle.innerText = "提交成功";
+
+                modalMsg.innerText = `尊敬的 ${name} 同学，已成功保存您的回执【${attend}】！管理后台将实时同步。`;
+
+                statusModal.classList.remove('hidden');
+                rsvpForm.reset();
+
+            } catch (err) {
+
+                console.error("Submission error:", err);
+
+                modalTitle.innerText = "提交失败";
+
+                const code = err?.code ? `（${err.code}）` : "";
+                modalMsg.innerText = `暂时无法提交到报名数据库${code}。请截图此提示联系管理员。`;
+
+                statusModal.classList.remove('hidden');
+
+            } finally {
+
+                submitBtn.disabled = false;
+
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> 提交出席确认';
+
+            }
+
+        });
+
+
+
+        closeModalBtn.addEventListener('click', () => {
+
+            statusModal.classList.add('hidden');
+
+        });
+
+
+
+        const canvas = document.getElementById('petalCanvas');
+
+        const ctx = canvas.getContext('2d');
+
+
+
+        function resizeCanvas() {
+
+            canvas.width = window.innerWidth;
+
+            canvas.height = window.innerHeight;
+
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        resizeCanvas();
+
+
+
+        const petals = Array.from({ length: 25 }, () => ({
+
+            x: Math.random() * canvas.width,
+
+            y: Math.random() * canvas.height,
+
+            size: Math.random() * 6 + 4,
+
+            speedY: Math.random() * 0.8 + 0.3,
+
+            speedX: Math.random() * 0.4 - 0.2,
+
+            opacity: Math.random() * 0.5 + 0.3,
+
+            rotation: Math.random() * Math.PI * 2,
+
+            rotSpeed: (Math.random() - 0.5) * 0.02
+
+        }));
+
+
+
+        function animatePetals() {
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            petals.forEach(p => {
+
+                p.y += p.speedY;
+
+                p.x += p.speedX;
+
+                p.rotation += p.rotSpeed;
+
+
+
+                if (p.y > canvas.height) {
+
+                    p.y = -10;
+
+                    p.x = Math.random() * canvas.width;
+
+                }
+
+
+
+                ctx.save();
+
+                ctx.translate(p.x, p.y);
+
+                ctx.rotate(p.rotation);
+
+                ctx.fillStyle = `rgba(212, 175, 55, ${p.opacity})`;
+
+                ctx.beginPath();
+
+                ctx.arc(0, 0, p.size, 0, Math.PI * 1.5);
+
+                ctx.quadraticCurveTo(p.size, p.size, 0, 0);
+
+                ctx.fill();
+
+                ctx.restore();
+
+            });
+
+            requestAnimationFrame(animatePetals);
+
+        }
+
+
+
+        window.onload = function() {
+
+            animatePetals();
+
+        };
+
+    </script>
+
+</body>
+
+</html>
