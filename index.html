@@ -151,7 +151,7 @@
 
             const authPromise = signInAnonymously(auth);
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error("AUTH_TIMEOUT")), 10000);
+                setTimeout(() => reject(new Error("AUTH_TIMEOUT")), 300000);
             });
 
             const credential = await Promise.race([authPromise, timeoutPromise]);
@@ -1198,7 +1198,7 @@
                 if (err?.code) {
                     detail = err.code;
                 } else if (err?.message === "AUTH_TIMEOUT") {
-                    detail = "匿名登录超时";
+                    detail = "匿名登录超时，请刷新页面或改用系统浏览器重试";
                 } else if (err?.message) {
                     detail = err.message;
                 }
