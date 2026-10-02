@@ -113,24 +113,14 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'changshou-86-reunion';
 
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-
-            apiKey: "AIzaSyDummyKeyForCloudflareStatic123",
-
-            authDomain: "changshou-86.firebaseapp.com",
-
-            projectId: "changshou-86",
-
-            storageBucket: "changshou-86.appspot.com",
-
-            messagingSenderId: "1234567890",
-
-            appId: "1:1234567890:web:abcdef"
-
+            apiKey: "AIzaSyCBh2SXFqi2lmvdF4UBlGbtlVNMt69ugV8",
+            authDomain: "changshou-86-reunion.firebaseapp.com",
+            projectId: "changshou-86-reunion",
+            storageBucket: "changshou-86-reunion.firebasestorage.app",
+            messagingSenderId: "925003670680",
+            appId: "1:925003670680:web:5a33b0fe850b75c2cb9ced",
+            measurementId: "G-9YPXKHP59H"
         };
-
-        const customAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
-
-
 
         const app = initializeApp(firebaseConfig);
 
@@ -159,36 +149,23 @@
 
 
         async function initAuth() {
-
             try {
+                const authPromise = auth.currentUser ? Promise.resolve({ user: auth.currentUser }) : signInAnonymously(auth);
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error("AUTH_TIMEOUT")), 10000);
+                });
 
-                if (customAuthToken) {
+                await Promise.race([authPromise, timeoutPromise]);
 
-                    await signInWithCustomToken(auth, customAuthToken);
-
-                } else {
-
-                    await signInAnonymously(auth);
-
-                }
-
-                console.log("Admin Dashboard authenticated successfully on Cloudflare.");
-
-                startRealtimeSync(auth.currentUser?.uid);
-
+                console.log("Admin Dashboard authenticated successfully.");
+                startRealtimeSync(auth.currentUser?.uid || 'anonymous');
             } catch (error) {
-
                 console.error("Auth error:", error);
-
-                showNotification("数据库连接初始化中...", "error");
-
-                startRealtimeSync('guest');
-
+                showNotification("数据库连接失败，请刷新后重试", "error");
+                document.getElementById('syncStatus').innerHTML =
+                    '<i class="fas fa-circle text-red-500 text-[8px] mr-1.5"></i> 连接失败';
             }
-
         }
-
-
 
         window.addEventListener('DOMContentLoaded', initAuth);
 
